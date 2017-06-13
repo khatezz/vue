@@ -1,0 +1,58 @@
+questionairepage : {
+	"category" : "Non-voice",
+	"page" : 1,
+	"duration" : 60,
+	"criteria" : "reading",
+	"passing" : 10,
+	"header" : [
+		{"hasheader" : false},
+		{"isitalic" : false},
+		{"isbold" : false},
+		{"isunderlined" : false},
+		{"alignment" : "center"},
+		{"size" : "h1"},
+		{"value" : "Sample Header"}
+	],
+	"text" : [
+		{"hastext" : false}
+		{"size" : "14px"}
+		{"alignment" : "center"},
+		{"value" : "Sample Text"}
+	],
+
+	"video" : [
+		{"hasvideo" : false},
+		{"alignment" : "center"},
+		{"value" : "aaa.mp4"}
+	],
+	"question" : [
+		{"questiontype" : "fill in the blank"},
+		{"value" : "Sample question"},
+		{"size" : "12px"},
+		{"alignment" : "center"},
+		{"isunderlined" : false},
+		{"isitalic" : false},
+		{"isbold" : false}
+		{
+			"choices" : [
+				{"letter" : "A", "text" : "Sample A"}
+				{"letter" : "B", "text" : "Sample B"}
+				{"letter" : "C", "text" : "Sample C"}
+			]
+		},
+		{
+			"answers" :[
+				{"filleintheblank" : "Answer for fill in the blank"},
+				{"singleselection" : "Letter for singleselection"},
+				{
+					"multipleselection" : [
+						{"letter" : "sample letter"},
+					]
+				}
+			]
+		}
+
+
+
+	]
+}

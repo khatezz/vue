@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'mysql'),
+    'default' => env('DB_CONNECTION', 'mongodb'),
 
     /*
     |--------------------------------------------------------------------------
@@ -52,6 +52,15 @@ return [
             'prefix' => '',
             'strict' => true,
             'engine' => null,
+        ],
+
+        'mongodb' => [
+            'driver' => 'mongodb',
+            'host' => env('MDB_HOST', '127.0.0.1'),
+            'port' => env('MDB_PORT', '27017'),
+            'username' => env('MDB_USERNAME','forge'),
+            'password' => env('MDB_PASSWORD', 'forge'),
+            'database' => env('MDB_DATABASE', 'forge')
         ],
 
         'pgsql' => [

@@ -1,12 +1,29 @@
 export default function (Vue){
 	Vue.validate = {
-		checkInputs (data){
-			for (let [key,value] of Object.entries(data)){
-				if(!value || value == 'SELECT USER GROUP' || value == 'SELECT STATUS'){
-					return false;
+		validateData(fields){
+
+			let isvalid = false
+			this.$refs[fields].validate((valid) => {
+				setTimeout(() => {
+				if(! valid){
+					this.$notify.error({
+			          title: 'Opps!',
+			          message: 'Something went wrong'
+			        })
+				}else{
+					this.$notify({
+				    	title: 'Success',
+				        message: 'New user saved',
+				        type: 'success'
+			        });
+
+			        isvalid = true
 				}
-			}
-			return true;
+				this.submitloading = false
+				},3000)
+			})
+
+			return isvalid
 		}
 	}
 

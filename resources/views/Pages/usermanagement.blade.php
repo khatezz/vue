@@ -2,7 +2,7 @@
 
 @section('content')
 <section id="content">
-	<div class="container">
+	<div class="container" id="usermanagement">
 	<div class="row">
 		<div class="col-md-9">
 			<div class="card">
@@ -22,7 +22,7 @@
                             <div class="input-group fg-float">
                             <span class="input-group-addon"><i class="zmdi zmdi-account"></i></span>
                                 <div class="fg-line">
-                                    <input type="text" class="form-control">
+                                    <input type="text" v-model="user.firstname" class="form-control">
                                     <label class="fg-label">Firstname</label>
                                 </div>
                               
@@ -152,4 +152,9 @@
 	</div>
 </div>
 </section>
+@endsection
+
+@section('javascript')
+
+<script src="/js/usermanagement.js"></script>
 @endsection

@@ -2,37 +2,48 @@
 	<div>
 		<section id="content">
 		    <div class="container">
+		    <el-form ref="usergroup" :model="usergroup" label-position="top" :rules="rules">
 		        <div class="row">
 		            <div class="col-md-6">
-		                <div class="card">
+		                <div class="card" >
 		                    <div class="card-header bgm-blue m-b-20">
 		                        <h2> <i class="zmdi zmdi-apps"></i> USER GROUPS</h2>
 		                    </div>
-		                    <div class="card-body card-padding">
-		                        <div class="conatiner">
-		                            <div class="input-group">
-		                                <span class="input-group-addon"><i class="zmdi zmdi-accounts"></i></span>
-		                         
-		                                    <input type="text" class="form-control" placeholder="Group Name" v-model="usergroup.name" :disabled="update">
-		                                   
-		                          
+		                    <div class="card-body card-padding" v-loading.body="submitloading" element-loading-text="Saving new user group...">
+		                    	
+		                        	<div class="form-group">
+			                        	<el-form-item label="User group name" prop="name">
+	                                  		<el-input
+									  		type="text"
+									  		autosize
+									  		placeholder="Group name"
+									  		v-model="usergroup.name">
+											</el-input>
+										</el-form-item>
 		                            </div> 
+		                      
+		                       
+		                        <hr style="border-top: dotted 2px; color:#D3DCE6;" />
+		                        <div class="form-group">
+			                        <el-form-item label="User group description" prop="description">
+		                               <el-input
+										  type="textarea"
+										  :autosize="{ minRows: 2, maxRows: 4}"
+										  placeholder="Description"
+										  v-model="usergroup.description">
+										</el-input>
+									</el-form-item>
 		                        </div>
-		                        <br>
-		                        <div class="input-group">
-		                            <span class="input-group-addon"><i class="zmdi zmdi-collection-text"></i></span>
-		                                <textarea class="form-control auto-size" placeholder="Description" v-model="usergroup.description" :disabled="update" rows="10">
-		                                	
-		                                </textarea>
-		                        </div>
+		                        
 		                        <br><br>
-		                        <button type="button" class="btn btn-warning" :disabled="update" @click="doSubmit">Add new user group</button>
-		                        <button type="button" class="btn btn-danger" :disabled="update">Clear</button>
+		                        <el-button type="warning"   v-if="! update" @click="doSubmit('usergroup')">Add new user group</el-button>
+		                        <el-button type="warning"   v-if="update" @click="doUpdate('usergroup')">Update user group</el-button>
+		                        <el-button type="danger"   @click="doClearFields('usergroup')">Clear</el-button>
 		                    </div>
 		                </div>
 		            </div>
-		            <transition name="fade">
-		            <div class="col-md-6" v-if="! update">
+
+		            <div class="col-md-6">
 		                <div class="card">
 		                    <div class="card-header bgm-blue m-b-20">
 		                        <h2> <i class="zmdi zmdi-apps"></i> ALL USER GROUPS</h2>
@@ -41,16 +52,27 @@
 		                    <div class="card-body card-padding">
 		                        <table class="table table-bordered table-hover">
 		                            <tbody>
-		                                <tr>
-		                                    <td>Recruitment</td>
-		                                    <td>Recruitment team</td>
+		                                <tr v-for="usergroup in usergroups">
+		                                    <td>{{ usergroup.name }}</td>
+		                                    <td>{{ usergroup.description }}</td>
 		                                    <td>
-		                                        <a href="javascript:;" type="button" class="btn btn-primary btn-sm" @click="updateGroup"> 
-		                                           <i class="zmdi zmdi-edit"></i> 
-		                                         </a>
-		                                        <a href="javascript:;" type="button" class="btn btn-danger btn-sm" @click="doDelete"> 
-		                                           <i class="zmdi zmdi-delete"></i> 
-		                                       </a>
+		                                     	<el-tooltip class="item" effect="light" content="Update user group" placement="top-start">
+			                                        <a href="javascript:;" 
+			                                        	type="button" 
+			                                        	class="btn btn-primary btn-sm" 
+			                                        	@click="updateGroup(usergroup._id)"> 
+			                                           <i class="zmdi zmdi-edit"></i> 
+			                                         </a>
+			                                    </el-tooltip>
+			                                    <el-tooltip class="item" effect="light" content="Remove user group" placement="top-start">
+			                                        <a href="javascript:;" 
+			                                           type="button" 
+			                                           class="btn btn-danger btn-sm" 
+			                                           @click="doDelete(usergroup._id)" 
+			                                           v-loading.fullscreen.lock="fullscreenLoading"> 
+			                                           <i class="zmdi zmdi-delete"></i> 
+			                                       </a>
+		                                       </el-tooltip>
 		                                    </td>
 		                                </tr>
 		                            </tbody>
@@ -58,16 +80,14 @@
 		                    </div>
 		                </div>
 		            </div>
-		            </transition>
-		         	<transition name="fade">
-		         		<update-group v-if="update" :update="update" @cancelUpdate="update = $event"></update-group>
-		         	</transition>
+
 		        </div>
+		    </el-form>
 		    </div>
 		</section>
 	</div>
-</template>
 
+</template>
 <script>
 	import UpdateGroup from './UpdateGroup.vue'
 	export default{
@@ -77,48 +97,133 @@
 					name : '',
 					description : '',
 				},
-				update : false
+				usergroups : {},
+				id : 0,
+				update : false,
+				submitloading : false,
+				fullscreenLoading : false,
+				rules : {
+					name : [
+						{required : true, message : 'Group name is required'},
+						
+					],
+
+					description : [
+						{required : true, message : 'Description is required'},
+						
+					]
+				}
 			}
 		},
 		components : {
 			'update-group' : UpdateGroup 
 		},
+		created () {
+			this.$http.get('api/getusergroups')
+			.then(response => {
+				this.usergroups = response.body
+			})
+		},
 		methods : {
-			doDelete(){
-				  swal({   
-                    title: "Are you sure?",   
-                    text: "You will not be able to recover this imaginary file!",   
-                    type: "warning",   
-                    showCancelButton: true,   
-                    confirmButtonText: "Yes, delete it!",
-	                }).then(function(){
-	                    swal("Deleted!", "Your imaginary file has been deleted.", "success"); 
-	                });
+			doDelete(id){
+				this.$confirm('This will permanently delete the file. Continue?', 'Warning', {
+          		confirmButtonText: 'OK',
+	          	cancelButtonText: 'Cancel',
+	          	type: 'warning'
+	        	}).then(() => {
+	        		this.openFullScreen()
+	         		setTimeout(() => {
+	         			this.$http.delete('api/deleteusergroup/'+id)
+	         			.then(response => {
+	         				this.usergroups = response.body
+	         			})
+	         			this.$notify.success({
+				          title: 'Deleted',
+				          message: 'User deleted'
+				        })
+	         		},3000)
+	        	}).catch(() => {
+	          		this.$message({
+			            type: 'info',
+			            message: 'Delete canceled'
+	          		})         
+	        	})
 
 			},
-			updateGroup(){
-				this.update = true;
+			updateGroup(id){
+				this.id = id
+				this.update = true
+				this.$http.get('api/getusergroup/'+this.id)
+				.then(response => {
+					this.usergroup.name = response.body.name
+					this.usergroup.description = response.body.description
+				})
 			},
 
-			doSubmit(){
-				let valid = this.$validate.checkInputs(this.usergroup)
-			 	console.log(valid);
-			}
+			doUpdate(usergroup){
+				this.submitloading = true
+				this.$refs[usergroup].validate((valid) =>{
+					setTimeout(() => {
+					if(! valid){
+						this.$notify.error({
+				          title: 'Opps!',
+				          message: 'Something went wrong'
+				        })
+					}else{
+
+						this.$http.post('api/updateusergroup/'+this.id,this.usergroup)
+						.then(response=>{
+							this.usergroups = response.body
+						})
+						this.$notify({
+					    	title: 'Success',
+					        message: 'User group updated successfuly',
+					        type: 'success'
+				        });
+					}
+					this.submitloading = false
+					this.update = false
+					this.doClearFields(usergroup)
+				},3000)
+				})
+			},
+			doSubmit(usergroup){
+				this.submitloading = true
+				this.$refs[usergroup].validate((valid) =>{
+					setTimeout(() => {
+					if(! valid){
+						this.$notify.error({
+				          title: 'Opps!',
+				          message: 'Something went wrong'
+				        })
+					}else{
+
+						this.$http.post('api/createusergroup',this.usergroup)
+						.then(response=>{
+							this.usergroups = response.body
+						})
+						this.$notify({
+					    	title: 'Success',
+					        message: 'New user saved',
+					        type: 'success'
+				        });
+					}
+					this.submitloading = false
+				},3000)
+				})
+				
+			 // 	console.log(valid);
+			},
+			openFullScreen() {
+        		this.fullscreenLoading = true
+        		setTimeout(() => {
+          			this.fullscreenLoading = false
+       			}, 3000)
+      		},
+
+      		doClearFields(usergroup){
+      			this.$refs[usergroup].resetFields()
+      		}
 		}
 	}
 </script>
-
-<style>
-	.fade-enter-active, .fade-leave-active {
-	  transition-property: opacity;
-	  transition-duration: .25s;
-	}
-
-	.fade-enter-active {
-	  transition-delay: .25s;
-	}
-
-	.fade-enter, .fade-leave-active {
-	  opacity: 0
-	}
-</style>

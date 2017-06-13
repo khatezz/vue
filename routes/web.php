@@ -1,5 +1,5 @@
 <?php
-
+use App\UserManagement;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -12,6 +12,7 @@
 */
 
 Route::get('/', function(){
+	
 	return view('Layout.page');
 });
 
@@ -27,7 +28,4 @@ Route::group(['prefix' => 'admin'],function(){
 	]);
 });
 
-Route::get('/chat', function(){
-	return response()->json([1,2,3,4,5],200);
-});
 

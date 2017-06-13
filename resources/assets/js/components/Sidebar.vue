@@ -43,15 +43,22 @@
                         <router-link tag="li" to="/field">
                             <a>Fields</a>
                         </router-link>
-                        <li><a href="javascript:;">Fields Groups</a></li>
+                        <router-link tag="li" to="/fieldgroup">
+                            <a>Field Group</a>
+                        </router-link>
                     </ul>
                 </li>
                 <li class="sub-menu">
                     <a href="#" data-ma-action="submenu-toggle"><i class="zmdi zmdi-help-outline"></i> Questionaire</a>
 
                     <ul>
-                        <li><a href="javascript:;">Types</a></li>
-                        <li><a href="javascript:;">Pages</a></li>
+
+                        <router-link tag="li" to="/questionairetype">
+                            <a>Types</a>
+                        </router-link>
+                         <router-link tag="li" to="/questionairepage">
+                            <a>Pages</a>
+                        </router-link>
                     </ul>
                 </li>
                 <li><a href="javascript:;"><i class="zmdi zmdi-file"></i> Exams</a></li>
